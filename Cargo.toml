@@ -1,0 +1,20 @@
+[package]
+name = "fcm_client"
+version = "1.0.0"
+edition = "2021"
+authors = ["Andres Hurtado Lopez<andres.hurtado.lopez@gmail.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+reqwest = { version = "0.11.10", features = ["json","rustls-tls"] }
+tokio = { version = "1.0", features = ["full"] }
+serde = "1.0.137"
+serde_json = {version = "1.0.81", features = ["preserve_order"]} 
+serde_derive = "1.0.137"
+
+[features]
+
+default = ["debug"]
+
+debug = []
