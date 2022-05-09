@@ -1,7 +1,7 @@
 use fcm_client::*;
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let url = "https://fcm.googleapis.com/fcm/send";
     let key = "here the key for the server should go";
@@ -17,7 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 		},
 		to: "here the token of the mobile device should go".to_string(),
 	    }
-	).await.map_err(|why| format!("Fail sending message : {}",why))?;
+	).map_err(|why| format!("Fail sending message : {}",why))?;
 
     #[cfg(feature="debug")]
     { println!("Firebase response: {:?}", _response); }

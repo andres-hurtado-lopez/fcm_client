@@ -52,7 +52,7 @@ impl FCMClient{
 	}
     }
 
-    pub async fn send_notification(&self, message: FirebaseMessage) -> Result<FirebaseResponse, Box<dyn std::error::Error>>{
+    pub fn send_notification(&self, message: FirebaseMessage) -> Result<FirebaseResponse, Box<dyn std::error::Error>>{
 
 	let mut headers = reqwest::header::HeaderMap::new();
 
@@ -64,7 +64,7 @@ impl FCMClient{
 
 	//return Ok(json_message);
 	
-	let request = reqwest::Client::new()
+	let request = reqwest::blocking::Client::new()
             .post(&self.url)
 	    //.bearer_auth(&self.key)
 	    .headers(headers)
@@ -74,8 +74,7 @@ impl FCMClient{
 	#[cfg(feature="debug")]
 	{ println!("request: {:?}",request); }
 
-	let response = reqwest::Client::new().execute(request)
-	    .await
+	let response = reqwest::blocking::Client::new().execute(request)
 	    .map_err(|why| format!("error enviando el mensaje http a firebase: {}",why))?;
 
 	let status = response.status();
@@ -90,12 +89,12 @@ impl FCMClient{
 	}
 	
 	if status.is_client_error() || status.is_server_error() {
-	    let text = response.text().await?;
+	    let text = response.text()?;
 	    return Err(format!("Error en la respuesta de firebase: {:?} {} {}",&status, status.canonical_reason().unwrap_or("UNKNOWN ERROR"), text))?;
 	}
 
 	
-	let decoded_response : FirebaseResponse = response.json().await
+	let decoded_response : FirebaseResponse = response.json()
             .map_err(|why| format!("error decodificando de json el mensaje http desde firebase: {}",why))?;
 
 	#[cfg(feature="debug")]
