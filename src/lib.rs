@@ -87,15 +87,29 @@ impl FCMClient{
 
 	    println!("status: {:?}\n\nheaders: {:?}.\n\ncontent_lenght: {:?}\n\n ", status, headers, content_length);
 	}
-	
+		
 	if status.is_client_error() || status.is_server_error() {
 	    let text = response.text()?;
 	    return Err(format!("Error en la respuesta de firebase: {:?} {} {}",&status, status.canonical_reason().unwrap_or("UNKNOWN ERROR"), text))?;
 	}
 
+	let decoded_response : FirebaseResponse;
+
+	if cfg!(feature="debug")
+	{
+
+	    let debug_buffer : String = response.text().unwrap();
+	    decoded_response = serde_json::from_str(&debug_buffer).unwrap();
+	    
+	}else{
+
+	    decoded_response = response.json()
+		.map_err(|why| format!("error decodificando de json el mensaje http desde firebase: {}",why))?;
+	    
+	}
+
+
 	
-	let decoded_response : FirebaseResponse = response.json()
-            .map_err(|why| format!("error decodificando de json el mensaje http desde firebase: {}",why))?;
 
 	#[cfg(feature="debug")]
 	{
