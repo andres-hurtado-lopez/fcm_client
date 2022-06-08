@@ -99,7 +99,9 @@ impl FCMClient{
 	{
 
 	    let debug_buffer : String = response.text().unwrap();
-	    decoded_response = serde_json::from_str(&debug_buffer).unwrap();
+	    dbg!(&debug_buffer);
+	    decoded_response = serde_json::from_str(&debug_buffer)
+		.map_err(|why| format!("error decodificando de json el mensaje http desde firebase: {}. Mesage Original: {}",why, &debug_buffer))?;
 	    
 	}else{
 
